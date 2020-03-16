@@ -26,7 +26,7 @@ Before proceeding with this tutorial, you'll need to install the following:
    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
    ```
-4. Install OPA Gatekeeper by following these
+1. Install OPA Gatekeeper by following these
    [instructions](https://github.com/open-policy-agent/gatekeeper#installation).
    This tutorial was constructed using OPA Gatekeeper `v3.1.0-beta.7`.
 1. Install [docker](https://docs.docker.com/install/).
@@ -157,10 +157,10 @@ kubectl apply -f ./config/tekton/trigger/webhook-run.yaml
 
 ## Watch the Trigger and Pipeline Work!
 
-Commit and push an amended commit to your development repo.
+Commit and push an empty commit to your development repo.
 
 ```bash
-git commit --amend -a -m "build commit" && git push origin mybranch
+git commit -a -m "build commit" --allow-empty && git push origin mybranch
 ```
 
 ## Install OPA Gatekeeper ConstraintTemplate and Constraint
@@ -184,20 +184,46 @@ sed -i s/quay.io/gcr.io/ ./config/k8s/deployment.yaml
 
 Commit and push the changes to watch OPA prevent the deployment.
 
-## Giving Developers Feedback Sooner
+## Giving Developers Feedback Sooner (Shift Left)
 
 Wouldn't it be great if developers didn't have to wait for the entire CI/CD
 pipeline to complete only to realize the operation they want to perform isn't
 allowed? To give developers feedback sooner, we need to move the policy
 prevention mechanisms earlier in the develoment lifecycle.
 
-In order to that, we'll use a tool called
+### Add Early Step to Pipeline
+
+One way to achieve this, is to add an initial step in the pipeline that
+attempts to perform the `kubectl apply` operations with the `--server-dry-run`
+flag so that we can get feedback sooner on whether the policy prevents this
+operation. To do this, let's add a task and update the pipeline steps to
+include a dry run step prior to anything else being run in the pipeline. Go
+ahead and apply these changes:
+
+```bash
+kubectl apply -f ./config/tekton/trigger/pipeline-opa.yaml
+```
+
+Commit and push an empty commit to your development repo.
+
+```bash
+git commit -a -m "build commit" --allow-empty && git push origin mybranch
+```
+
+And watch the pipeline fail earlier from the `quay.io` to `gcr.io` change.
+
+### Add Earlier Step to Development Workflow
+
+We can give developers feedback even earlier in the developer lifecycle so that
+the developer doesn't even have to kick off the CI/CD pipeline and consume
+existing resources. In order to do that, we'll use a tool called
 [`conftest`](https://github.com/instrumenta/conftest). It is a tool that
 facilitates testing your configuration files against OPA. In our case, we want
 to test the trusted registries Rego policy against our `deployment.yaml` file.
 
-We can leverage git `pre-commit` hooks in order to do that by creating a
-symbolic link to the git `pre-commit` hook script:
+Using `conftest`, we can also leverage git `pre-commit` hooks to add a policy
+check. In order to do that, create a symbolic link to the git `pre-commit` hook
+script:
 
 ```bash
 ln -rs hooks/pre-commit.sh .git/hooks/pre-commit
