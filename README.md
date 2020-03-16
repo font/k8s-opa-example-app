@@ -9,7 +9,7 @@ Before proceeding with this tutorial, you'll need to install the following:
    triggers](https://github.com/tektoncd/triggers/blob/master/docs/getting-started/README.md#install-dependencies).
    This tutorial was constructed using pipelines `v0.10.1` and triggers
    `v0.2.1`.
-2. Install the TektonCD Dashboard by following these
+1. Install the TektonCD Dashboard by following these
    [instructions](https://github.com/tektoncd/dashboard#install-dashboard).
    This tutorial was constructed using dashboard `v0.5.2`.
    Once installed, you can install the following Ingress resources to expose it
@@ -19,7 +19,7 @@ Before proceeding with this tutorial, you'll need to install the following:
    ```bash
    kubectl apply -f ./config/tekton/dashboard/ingress.yaml
    ```
-3. If using GCP, follow the [instructions for using the Nginx Ingress
+1. If using GCP, follow the [instructions for using the Nginx Ingress
    Controller](https://github.com/tektoncd/triggers/blob/master/docs/exposing-eventlisteners.md#using-nginx-ingress)
    pasted here for convenience:
    ```bash
@@ -29,6 +29,7 @@ Before proceeding with this tutorial, you'll need to install the following:
 4. Install OPA Gatekeeper by following these
    [instructions](https://github.com/open-policy-agent/gatekeeper#installation).
    This tutorial was constructed using OPA Gatekeeper `v3.1.0-beta.7`.
+1. Install [docker](https://docs.docker.com/install/).
 
 ## Fork This Repository
 
