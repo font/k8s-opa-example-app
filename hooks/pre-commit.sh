@@ -29,4 +29,4 @@ if [[ ! ${committing} ]]; then
 fi
 
 # Test prospective commit
-docker run --rm -v $(pwd):/project instrumenta/conftest test "${DEPLOYMENT_CONFIG}" -p "${REGO_POLICY}"
+docker run --rm -v $(pwd):/project:Z instrumenta/conftest:v0.17.0 test "${DEPLOYMENT_CONFIG}" -p "${REGO_POLICY}"
