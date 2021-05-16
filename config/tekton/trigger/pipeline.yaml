@@ -123,7 +123,7 @@ spec:
   resources:
     - name: source-repo
       type: git
-      targetPath: go/src/github.com/ifont/opa-example-app
+      targetPath: go/src/github.com/font/k8s-opa-example-app
   check:
     image: golang
     command: ["go"]
