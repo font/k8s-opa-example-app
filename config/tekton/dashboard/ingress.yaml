@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tekton-dashboard
@@ -8,7 +8,10 @@ spec:
     - host: tekton.ifontlabs.com
       http:
         paths:
-        - path: /
+        - pathType: Prefix
+          path: /
           backend:
-            serviceName: tekton-dashboard
-            servicePort: 9097
+            service:
+              name: tekton-dashboard
+              port:
+                number: 9097
