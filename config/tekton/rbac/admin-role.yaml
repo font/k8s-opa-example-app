@@ -5,10 +5,11 @@ metadata:
   name: tekton-triggers-admin
 rules:
 - apiGroups:
-  - tekton.dev
+  - triggers.tekton.dev
   resources:
   - eventlisteners
   - triggerbindings
+  - clustertriggerbindings
   - triggertemplates
   - pipelineresources
   verbs:
