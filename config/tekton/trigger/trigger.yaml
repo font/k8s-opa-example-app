@@ -7,6 +7,4 @@ spec:
   bindings:
     - ref: opa-example-app-triggerbinding
   template:
-    # In newer trigger versions the 'name' field will be deprecated and is
-    # replaced by 'ref' field.
     ref: opa-example-app-triggertemplate
