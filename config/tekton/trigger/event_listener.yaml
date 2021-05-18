@@ -1,0 +1,8 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: opa-example-app-eventlistener
+spec:
+  serviceAccountName: tekton-triggers-admin
+  triggers:
+    - triggerRef: opa-example-app-trigger
