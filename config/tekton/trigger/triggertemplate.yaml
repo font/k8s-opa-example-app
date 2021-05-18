@@ -17,7 +17,7 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      name: opa-example-app-pipeline-run-$(tt.params.git-repo-name)-$(uid)
+      name: pr-$(tt.params.git-repo-name)-$(uid)
     spec:
       serviceAccountName: tekton-triggers-admin
       pipelineRef:
