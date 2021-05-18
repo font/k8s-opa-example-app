@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: el-opa-example-app-eventlistener
+  namespace: opa-example-app-trigger
+spec:
+  rules:
+  - host: tekton-trigger.ifontlabs.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: el-opa-example-app-eventlistener
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
