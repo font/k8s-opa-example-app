@@ -63,7 +63,7 @@ spec:
     - name: dockerconfig
       workspace: github-secret
     runAfter:
-    - fetch-repository
+    - apply-opa-policy
 
   - name: apply-manifests
     taskRef:
