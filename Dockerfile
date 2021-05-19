@@ -14,6 +14,5 @@ RUN go build -o app main.go
 FROM alpine:latest
 WORKDIR /
 COPY --from=builder /workspace/app .
-USER nonroot:nonroot
 
 CMD ["/app"]
