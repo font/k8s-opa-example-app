@@ -223,15 +223,40 @@ prevention mechanisms earlier in the develoment lifecycle.
 
 ### Add Early Step to Pipeline
 
+The following are two ways we can add an early step to the pipeline to shift
+left.
+
+#### Using Server Dry Run
+
 One way to achieve this, is to add an initial step in the pipeline that
 attempts to perform the `kubectl apply` operations with the `--server-dry-run`
 flag so that we can get feedback sooner on whether the policy prevents this
-operation. To do this, let's add a task and update the pipeline steps to
-include a dry run step prior to anything else being run in the pipeline. Go
-ahead and apply these changes:
+operation. To do this, let's add a dry-run step to the pipeline prior to
+anything else being run in the pipeline. Go ahead and apply these changes:
 
 ```bash
-kubectl apply -f ./config/tekton/trigger/pipeline-opa.yaml
+kubectl apply -f ./config/tekton/pipeline/pipeline-dryrun.yaml
+```
+
+Commit and push an empty commit to your development repo.
+
+```bash
+git commit -a -m "build commit" --allow-empty && git push origin mybranch
+```
+
+And watch the pipeline fail earlier from the `quay.io` to `gcr.io` change.
+
+#### `conftest`
+
+One way to achieve this, is to add an initial step in the pipeline that
+executes `conftest` to perform the the policy evaluation to see if the policy
+prevents this operation. To do this, let's add a `conftest` step to the
+pipeline prior to anything else being run in the pipeline. Go ahead and apply
+these changes:
+
+```bash
+kubectl apply -f ./config/tekton/task/conftest.yaml
+kubectl apply -f ./config/tekton/pipeline/pipeline-conftest.yaml
 ```
 
 Commit and push an empty commit to your development repo.
