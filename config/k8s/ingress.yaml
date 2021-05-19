@@ -1,14 +1,19 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
   name: opa-example-app
   namespace: opa-example-app
 spec:
   rules:
-    - host: opa.ifontlabs.com
-      http:
-        paths:
-        - path: /
-          backend:
-            serviceName: opa-example-app
-            servicePort: 8080
+  - host: opa.ifontlabs.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: opa-example-app
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
