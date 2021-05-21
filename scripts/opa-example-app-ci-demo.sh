@@ -19,9 +19,6 @@ ls
 # This application is a simple hello world web application containing the Go
 # source code and Dockerfile for building its image.
 
-vi main.go
-vi Dockerfile
-
 # Let's say you're a developer and the application is already deployed and
 # running.
 
@@ -62,7 +59,7 @@ git push
 # Pipeline we can look at the Gatekeeper ConstraintTemplate and Constraint
 # resources that are configured to prevent unauthorized registries from being
 # used to deploy images.
-#
+
 # Here we can see the constrainttemplate defines a new CRD K8sTrustedRegistries
 # that takes an array of trusted registries. It then defines a rego policy
 # template that given the set of trusted registries and container spec as input
