@@ -1,14 +1,19 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
   name: tekton-dashboard
   namespace: tekton-pipelines
 spec:
   rules:
-    - host: tekton.ifontlabs.com
+    - host: tekton-dashboard.ifontlabs.com
       http:
         paths:
-        - path: /
+        - pathType: Prefix
+          path: /
           backend:
-            serviceName: tekton-dashboard
-            servicePort: 9097
+            service:
+              name: tekton-dashboard
+              port:
+                number: 9097

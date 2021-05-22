@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: create-webhook-run
+  namespace: opa-example-app-trigger
+spec:
+  taskRef:
+    name: create-webhook
+  params:
+  - name: GitHubOrg
+    value: "font"
+  - name: GitHubUser
+    value: "font"
+  - name: GitHubRepo
+    value: "k8s-opa-example-app"
+  - name: GitHubSecretName
+    value: webhook-secret
+  - name: GitHubAccessTokenKey
+    value: token
+  - name: GitHubSecretStringKey
+    value: secret
+  - name: ExternalDomain
+    value: tekton-trigger.ifontlabs.com
+  timeout: 1000s
+  serviceAccountName: tekton-triggers-createwebhook

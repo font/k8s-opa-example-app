@@ -1,0 +1,79 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: opa-example-app-pipeline
+  namespace: opa-example-app-trigger
+spec:
+  workspaces:
+  - name: shared-workspace
+  - name: github-secret
+
+  params:
+  - name: deployment-name
+    type: string
+    description: name of the deployment to be patched
+  - name: git-url
+    type: string
+    description: url of the git repo for the code of deployment
+  - name: git-revision
+    type: string
+    description: revision to be used from repo of the code for deployment
+    default: "main"
+  - name: IMAGE
+    type: string
+    description: image to be built from the code
+
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+      kind: Task
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: $(params.git-url)
+    - name: revision
+      value: $(params.git-revision)
+
+  - name: apply-opa-policy
+    taskRef:
+      name: kubernetes-actions
+    params:
+    - name: script
+      value: |
+        kubectl apply -f ./config/k8s/ --server-dry-run
+    workspaces:
+    - name: manifest-dir
+      workspace: shared-workspace
+    runAfter:
+    - fetch-repository
+
+  - name: build-image
+    taskRef:
+      name: kaniko
+      kind: Task
+    params:
+    - name: IMAGE
+      value: $(params.IMAGE)
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    - name: dockerconfig
+      workspace: github-secret
+    runAfter:
+    - apply-opa-policy
+
+  - name: apply-manifests
+    taskRef:
+      name: kubernetes-actions
+    params:
+    - name: script
+      value: |
+        kubectl replace --force -f ./config/k8s/
+    workspaces:
+    - name: manifest-dir
+      workspace: shared-workspace
+    runAfter:
+    - build-image

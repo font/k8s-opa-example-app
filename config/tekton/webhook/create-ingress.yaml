@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: create-ingress
@@ -7,24 +7,23 @@ spec:
   - name: work
     emptyDir: {}
 
-  inputs:
-    params:
-    - name: CreateCertificate
-      description: "Enables/disables the creation of a self-signed certificate for $(inputs.params.ExternalDomain)"
-      default: "true"
-    - name: CertificateKeyPassphrase
-      description: "Phrase that protects private key. This must be provided when the self-signed certificate is created"
-    - name: CertificateSecretName
-      description: "Secret name for Ingress certificate. The Secret should not exist if the self-signed certificate creation is enabled"
-    - name: ExternalDomain
-      description: "The external domain for the EventListener e.g. `$(inputs.params.EventListenerName).PROXYIP.nip.io`"
-    - name: Service
-      description: "The name of the Service used in the Ingress. This will also be the name of the Ingress."
-    - name: ServicePort
-      description: "The service port that the ingress is being created on"
-    - name: ServiceUID
-      description: "The uid of the service. If set, this creates an owner reference on the service"
-      default: ""
+  params:
+  - name: CreateCertificate
+    description: "Enables/disables the creation of a self-signed certificate for $(inputs.params.ExternalDomain)"
+    default: "true"
+  - name: CertificateKeyPassphrase
+    description: "Phrase that protects private key. This must be provided when the self-signed certificate is created"
+  - name: CertificateSecretName
+    description: "Secret name for Ingress certificate. The Secret should not exist if the self-signed certificate creation is enabled"
+  - name: ExternalDomain
+    description: "The external domain for the EventListener e.g. `$(inputs.params.EventListenerName).PROXYIP.nip.io`"
+  - name: Service
+    description: "The name of the Service used in the Ingress. This will also be the name of the Ingress."
+  - name: ServicePort
+    description: "The service port that the ingress is being created on"
+  - name: ServiceUID
+    description: "The uid of the service. If set, this creates an owner reference on the service"
+    default: ""
 
   steps:
   - name: generate-certificate
@@ -76,9 +75,11 @@ spec:
       set -e
       if [ -n "$(inputs.params.ServiceUID)" ];then
         cat <<EOF | kubectl create -f - || true
-        apiVersion: extensions/v1beta1
+        apiVersion: networking.k8s.io/v1
         kind: Ingress
         metadata:
+          annotations:
+            kubernetes.io/ingress.class: nginx
           name: $(inputs.params.Service)
           ownerReferences:
           - name: $(inputs.params.Service)
@@ -95,14 +96,20 @@ spec:
             http:
               paths:
               - backend:
-                  serviceName: $(inputs.params.Service)
-                  servicePort: $(inputs.params.ServicePort)
+                  service:
+                    name: $(inputs.params.Service)
+                    port:
+                      number: $(inputs.params.ServicePort)
+                path: /
+                pathType: Prefix
       EOF
       else
         cat <<EOF | kubectl create -f - || true
-        apiVersion: extensions/v1beta1
+        apiVersion: networking.k8s.io/v1
         kind: Ingress
         metadata:
+          annotations:
+            kubernetes.io/ingress.class: nginx
           name: $(inputs.params.Service)
         spec:
           tls:
@@ -114,7 +121,11 @@ spec:
             http:
               paths:
               - backend:
-                  serviceName: $(inputs.params.Service)
-                  servicePort: $(inputs.params.ServicePort)
+                  service:
+                    name: $(inputs.params.Service)
+                    port:
+                      number: $(inputs.params.ServicePort)
+                path: /
+                pathType: Prefix
       EOF
       fi

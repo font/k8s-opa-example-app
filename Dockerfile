@@ -1,7 +1,18 @@
+# Build the app binary
 FROM golang:alpine as builder
-COPY main.go .
-RUN go build -o /app .
+
+WORKDIR /workspace
+
+# Copy the Go Modules manifests
+COPY go.mod go.mod
+# Copy the go source
+COPY main.go main.go
+
+# Build
+RUN go build -o app main.go
 
 FROM alpine:latest
-CMD ["./app"]
-COPY --from=builder /app .
+WORKDIR /
+COPY --from=builder /workspace/app .
+
+CMD ["/app"]

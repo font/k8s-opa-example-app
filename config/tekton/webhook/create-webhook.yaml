@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: create-webhook
@@ -8,28 +8,27 @@ spec:
     secret:
       secretName: $(inputs.params.GitHubSecretName)
 
-  inputs:
-    params:
-    - name: ExternalDomain
-      description: "The external domain for the EventListener e.g. `$(inputs.params.EventListenerName).<PROXYIP>.nip.io`"
-    - name: GitHubUser
-      description: "The GitHub user"
-    - name: GitHubRepo
-      description: "The GitHub repo where the webhook will be created"
-    - name: GitHubOrg
-      description: "The GitHub organization where the webhook will be created"
-    - name: GitHubSecretName
-      description: "The Secret name for GitHub access token. This is always mounted and must exist"
-    - name: GitHubAccessTokenKey
-      description: "The GitHub access token key name"
-    - name: GitHubSecretStringKey
-      description: "The GitHub secret string key name"
-    - name: GitHubDomain
-      description: "The GitHub domain. Override for GitHub Enterprise"
-      default: "github.com"
-    - name: WebhookEvents
-      description: "List of events the webhook will send notifications for"
-      default: '[\"push\",\"pull_request\"]'
+  params:
+  - name: ExternalDomain
+    description: "The external domain for the EventListener e.g. `$(inputs.params.EventListenerName).<PROXYIP>.nip.io`"
+  - name: GitHubUser
+    description: "The GitHub user"
+  - name: GitHubRepo
+    description: "The GitHub repo where the webhook will be created"
+  - name: GitHubOrg
+    description: "The GitHub organization where the webhook will be created"
+  - name: GitHubSecretName
+    description: "The Secret name for GitHub access token. This is always mounted and must exist"
+  - name: GitHubAccessTokenKey
+    description: "The GitHub access token key name"
+  - name: GitHubSecretStringKey
+    description: "The GitHub secret string key name"
+  - name: GitHubDomain
+    description: "The GitHub domain. Override for GitHub Enterprise"
+    default: "github.com"
+  - name: WebhookEvents
+    description: "List of events the webhook will send notifications for"
+    default: '[\"push\",\"pull_request\"]'
   steps:
   - name: create-webhook
     image: pstauffer/curl:latest

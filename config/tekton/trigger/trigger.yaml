@@ -1,0 +1,10 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: opa-example-app-trigger
+spec:
+  serviceAccountName: tekton-triggers-admin
+  bindings:
+    - ref: opa-example-app-triggerbinding
+  template:
+    ref: opa-example-app-triggertemplate
